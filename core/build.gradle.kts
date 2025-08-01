@@ -1,0 +1,129 @@
+val GROUP = "io.github.likespro" // Until normal group ID - com.axus.id
+val VERSION = "0.0.1"
+val NAME = "AXUS ID Client"
+val DESCRIPTION = "Client library for AXUS ID identity system."
+val URL = "https://axusid.unlimitedexcellence.org"
+val LICENSES: MavenPomLicenseSpec.(project: Project) -> Unit = { project ->
+    license {
+        name.set("Mozilla Public License 2.0")
+        url.set("https://www.mozilla.org/en-US/MPL/2.0/")
+    }
+}
+val DEVELOPERS: MavenPomDeveloperSpec.() -> Unit = {
+    developer {
+        id.set("likespro")
+        email.set("likespro.eth@gmail.com")
+    }
+}
+val SCM: MavenPomScm.() -> Unit = {
+//    connection.set("scm:git:git://github.com/likespro/commons.git")
+//    developerConnection.set("scm:git:ssh://github.com:likespro/commons.git")
+//    url.set("https://github.com/likespro/commons")
+}
+val PUBLISHED_ARTIFACTS_PREFIX = "axusid-" // Until normal group ID - eth.likespro.commons
+
+
+plugins {
+    kotlin("jvm") version "2.1.20"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.10"
+    id("jacoco")
+    id("org.jetbrains.dokka") version "1.9.0"
+    id("maven-publish")
+    id("signing")
+    id("com.gradleup.nmcp").version("0.1.4")
+}
+
+group = GROUP
+version = VERSION
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+dependencies {
+    api("io.github.likespro:axusid-core:0.0.1")
+    implementation("io.github.likespro:commons-core:3.1.0")
+    implementation("io.github.likespro:lpfcp-core:1.1.0")
+    implementation("io.ktor:ktor-serialization-gson:3.1.3")
+    testImplementation(kotlin("test"))
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+jacoco {
+    toolVersion = "0.8.10"
+}
+tasks.test {
+    useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.create("documentate") {
+    group = "documentation"
+    dependsOn(tasks.dokkaHtml)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+
+            artifactId = PUBLISHED_ARTIFACTS_PREFIX + project.name
+
+            pom {
+                name.set(NAME)
+                description.set(DESCRIPTION)
+                url.set(URL)
+                licenses { LICENSES(project) }
+                developers { DEVELOPERS() }
+                scm { SCM() }
+            }
+        }
+    }
+
+    repositories {
+        if(System.getenv("GITHUB_REPO") != null) {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/" + System.getenv("GITHUB_REPO"))
+
+                credentials {
+                    username = System.getenv("GITHUB_USERNAME")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+    }
+}
+
+if(System.getenv("PGP_PRIVATE_KEY") != null) signing {
+    sign(publishing.publications)
+    useInMemoryPgpKeys(System.getenv("PGP_PRIVATE_KEY").replace("\\n", "\n")?.trimIndent(), System.getenv("PGP_PRIVATE_KEY_PASSWORD") ?: "")
+}
+
+nmcp {
+    centralPortal {
+        username = System.getenv("SONATYPE_USERNAME")
+        password = System.getenv("SONATYPE_PASSWORD")
+        publishingType = "USER_MANAGED"
+    }
+}
+
+tasks.register("printProjectName") {
+    doLast {
+        println(rootProject.name)
+    }
+}
+tasks.register("printProjectVersion") {
+    doLast {
+        println(version)
+    }
+}
