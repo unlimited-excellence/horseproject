@@ -2,11 +2,15 @@ package infrastructure.persistence.repositories
 
 import com.axus.winelore.model.entity.Commission
 import com.axus.winelore.model.entity.Competition
+import com.axus.winelore.model.entity.Wine
+import com.axus.winelore.model.entity.WineSample
 import domain.ports.repositories.CommissionRepository
 import eth.likespro.atomarix.Atom
 import eth.likespro.atomarix.adapters.AtomarixExposedAdapter
 import eth.likespro.commons.models.Pagination
+import eth.likespro.commons.models.value.Timestamp
 import infrastructure.persistence.tables.CommissionsTable
+import infrastructure.persistence.tables.CompetitionsTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -40,6 +44,24 @@ class CommissionRepositoryImpl : CommissionRepository {
                 (CommissionsTable.name eq name.value)
             }
             .empty()
+    }
+
+    override suspend fun updateStartedAtAndCurrentWineSampleId(
+        atom: Atom,
+        id: Commission.Id,
+        startedAt: Timestamp?,
+        currentWineSampleId: WineSample.Id
+    ) = AtomarixExposedAdapter.runWithAdapter(atom) {
+        CommissionsTable.update({ CommissionsTable.id eq id.value }) {
+            it[CommissionsTable.startedAt] = startedAt?.toInstant()
+            it[CommissionsTable.currentWineSampleId] = currentWineSampleId.value
+        }.let {  }
+    }
+
+    override suspend fun updateCurrentWineSampleId(atom: Atom, id: Commission.Id, currentWineSampleId: Wine.Id) = AtomarixExposedAdapter.runWithAdapter(atom) {
+        CommissionsTable.update({ CommissionsTable.id eq id.value })
+        { it[CommissionsTable.currentWineSampleId] = currentWineSampleId.value }
+            .let {  }
     }
 
     override suspend fun count(atom: Atom, pagination: Pagination?): Long {

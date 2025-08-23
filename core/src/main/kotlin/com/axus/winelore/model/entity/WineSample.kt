@@ -14,6 +14,9 @@ data class WineSample(
     val code: Code,
     var previousWineSampleId: Id,
 ): Entity<WineSample.Id> {
+    class CompetitionIdAndCodeAreAlreadyUsedException : RuntimeException("WineSample Competition.Id and Code are already used.")
+    class CompetitionIdAndPreviousWineSampleIdAreAlreadyUsedException : RuntimeException("WineSample Competition.Id and WineSample.Id of previousWineSampleId are already used.")
+
     @Serializable
     data class Id(
         val value: String = UUID.randomUUID().toString()

@@ -3,8 +3,10 @@ package infrastructure.persistence.tables
 import com.axus.id.model.value.AUID
 import com.axus.winelore.model.entity.Wine
 import eth.likespro.commons.models.value.Iteration
+import eth.likespro.commons.models.value.Timestamp
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.javatime.timestamp
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 
 object WinesTable: Table("wines") {
@@ -14,6 +16,7 @@ object WinesTable: Table("wines") {
     val iteration = long("iteration")
     val color = enumerationByName("color", 30, Wine.Color::class)
     val type = enumerationByName("type", 30, Wine.Type::class)
+    val createdAt = timestamp("created_at")
 
     override val primaryKey = PrimaryKey(id)
 
@@ -27,7 +30,8 @@ object WinesTable: Table("wines") {
         name = Wine.Name(row[name]),
         iteration = Iteration(row[iteration]),
         color = row[color],
-        type = row[type]
+        type = row[type],
+        createdAt = Timestamp(row[createdAt])
     )
 
     fun copy(wine: Wine, to: UpdateBuilder<Int>) {
@@ -37,5 +41,6 @@ object WinesTable: Table("wines") {
         to[iteration] = wine.iteration.value
         to[color] = wine.color
         to[type] = wine.type
+        to[createdAt] = wine.createdAt.toInstant()
     }
 }

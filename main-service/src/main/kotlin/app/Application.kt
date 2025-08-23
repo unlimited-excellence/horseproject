@@ -6,6 +6,7 @@ import presentation.lpfcp.configureLPFCP
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.application.*
 import org.koin.java.KoinJavaComponent.get
+import presentation.rest.configureREST
 
 val logger = KotlinLogging.logger {}
 
@@ -17,4 +18,5 @@ fun Application.module() {
     configureDI()
     get<DatabaseFactory>(DatabaseFactory::class.java).init()
     configureLPFCP()
+    configureREST()
 }

@@ -13,9 +13,10 @@ data class Competition(
     override val id: Id = Id(),
     val organizer: AUID,
     val name: Name,
-    var status: Status = Status.CREATED,
     var plannedStartAt: Timestamp
 ): Entity<Competition.Id> {
+    class NameIsAlreadyUsedException : RuntimeException("Competition Name is already used.")
+
     @Serializable
     data class Id(
         val value: String = UUID.randomUUID().toString()
@@ -50,14 +51,5 @@ data class Competition(
 
             return this
         }
-    }
-
-    enum class Status {
-        CREATED,
-        APPROVED,
-        STARTED,
-        ENDED
-        ;
-        class IsInvalidException(override val message: String) : RuntimeException()
     }
 }

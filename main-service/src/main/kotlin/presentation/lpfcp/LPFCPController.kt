@@ -5,6 +5,7 @@ import com.axus.id.model.entity.Token
 import com.axus.id.model.value.AUID
 import com.axus.winelore.WineLoreEndpoint
 import com.axus.winelore.model.entity.*
+import eth.likespro.commons.models.Pagination
 import eth.likespro.commons.models.WrappedException
 import eth.likespro.commons.models.value.Iteration
 import eth.likespro.commons.models.value.Timestamp
@@ -13,6 +14,7 @@ import eth.likespro.lpfcp.ktor.Ktor.lpfcp
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
+import org.json.JSONObject
 
 class MainServiceImpl : WineLoreEndpoint {
     // <============ Wine Service ============>
@@ -69,6 +71,11 @@ class MainServiceImpl : WineLoreEndpoint {
     }
 
     @LPFCP.ExposedFunction
+    override fun filterCompetitions(organizer: AUID?, pagination: Pagination): List<Competition> = runBlocking {
+        FilterCompetitionsRequest(organizer, pagination).execute()
+    }
+
+    @LPFCP.ExposedFunction
     override fun createCommissionParticipant(
         commissionId: Commission.Id,
         auid: AUID,
@@ -79,13 +86,28 @@ class MainServiceImpl : WineLoreEndpoint {
     }
 
     @LPFCP.ExposedFunction
+    override fun isExistingCommissionParticipantByCommissionIdAndAUID(
+        commissionId: Commission.Id,
+        auid: AUID
+    ): Boolean = runBlocking {
+        IsExistingCommissionParticipantByCommissionIdAndAUIDRequest(commissionId, auid).execute()
+    }
+
+    @LPFCP.ExposedFunction
     override fun getCommissionParticipantByCommissionIdAndAUID(
         commissionId: Commission.Id,
         auid: AUID
     ): CommissionParticipant? = runBlocking {
-        GetCommissionParticipantByCompetitionIdAndAUIDRequest(commissionId, auid).execute()
+        GetCommissionParticipantByCommissionIdAndAUIDRequest(commissionId, auid).execute()
     }
 
+    @LPFCP.ExposedFunction
+    override fun getCommissionsByParticipant(
+        auid: AUID,
+        pagination: Pagination
+    ): List<Pair<Commission, CommissionParticipant>> = runBlocking {
+        GetCommissionsByParticipantRequest(auid, pagination).execute()
+    }
 
 
     // <============ Commission Service ============>
@@ -106,6 +128,11 @@ class MainServiceImpl : WineLoreEndpoint {
         name: Commission.Name
     ): Commission? = runBlocking {
         GetCommissionByCompetitionIdAndNameRequest(competitionId, name).execute()
+    }
+
+    @LPFCP.ExposedFunction
+    override fun startCommission(auid: AUID, commissionId: Commission.Id, tokenId: Token.Id) = runBlocking {
+        StartCommissionRequest(auid, commissionId, tokenId).execute()
     }
 
 
@@ -136,6 +163,32 @@ class MainServiceImpl : WineLoreEndpoint {
     @LPFCP.ExposedFunction
     override fun getWineSampleByCommissionIdAndCode(commissionId: Commission.Id, code: WineSample.Code): WineSample? = runBlocking {
         GetWineSampleByCommissionIdAndCodeRequest(commissionId, code).execute()
+    }
+
+    @LPFCP.ExposedFunction
+    override fun filterWineSamples(
+        commissionId: Commission.Id?,
+        wineId: Wine.Id?,
+        code: WineSample.Code?,
+        previousWineSampleId: WineSample.Id?,
+        pagination: Pagination
+    ): List<WineSample> = runBlocking {
+        FilterWineSamplesRequest(commissionId, wineId, code, previousWineSampleId, pagination).execute()
+    }
+
+
+    // <============ WineSampleAssessment Service ============>
+
+    @LPFCP.ExposedFunction
+    override fun createWineSampleAssessment(
+        commissionId: Commission.Id,
+        from: AUID,
+        wineSampleId: WineSample.Id,
+        mark: WineSampleAssessment.Mark,
+        metadata: JSONObject,
+        tokenId: Token.Id
+    ): WineSampleAssessment = runBlocking {
+        CreateWineSampleAssessmentRequest(commissionId, from, wineSampleId, mark, metadata, tokenId).execute()
     }
 }
 

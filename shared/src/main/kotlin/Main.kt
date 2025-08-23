@@ -3,6 +3,8 @@ import com.axus.id.model.entity.Token
 import com.axus.id.model.value.AUID
 import com.axus.winelore.WineLoreEndpoint
 import com.axus.winelore.model.entity.*
+import eth.likespro.commons.models.Pagination
+import eth.likespro.commons.models.value.Iteration
 import eth.likespro.lpfcp.LPFCP
 
 fun main() {
@@ -49,6 +51,32 @@ fun main() {
 //        Commission.Name("Червона комісія"),
 //        Token.Id(session.token)
 //    ))
+//    println(lpfcpEndpoint.createCommission(
+//        Competition.Id("5f2afa21-7668-4db3-b949-159c8a7ab31b"),
+//        Commission.Name("Head of Experts, approved"),
+//        Token.Id(session.token)
+//    ))
+//    println(lpfcpEndpoint.createCommission(
+//        Competition.Id("5f2afa21-7668-4db3-b949-159c8a7ab31b"),
+//        Commission.Name("Head of Experts, not approved"),
+//        Token.Id(session.token)
+//    ))
+//    println(lpfcpEndpoint.createCommission(
+//        Competition.Id("5f2afa21-7668-4db3-b949-159c8a7ab31b"),
+//        Commission.Name("Head of Experts, no wines & not approved"),
+//        Token.Id(session.token)
+//    ))
+//    println(lpfcpEndpoint.createCommission(
+//        Competition.Id("5f2afa21-7668-4db3-b949-159c8a7ab31b"),
+//        Commission.Name("Expert"),
+//        Token.Id(session.token)
+//    ))
+//    println(lpfcpEndpoint.createCommission(
+//        Competition.Id("5f2afa21-7668-4db3-b949-159c8a7ab31b"),
+//        Commission.Name("Ніхто"),
+//        Token.Id(session.token)
+//    ))
+
 //    println(lpfcpEndpoint.getCommission(
 //        Commission.Id("7a0a6a1f-ca13-4b64-8cf7-c8e33df3b50a")
 //    ))
@@ -60,24 +88,89 @@ fun main() {
     // <============ Create wine commission participant ============>
 
 //    println(lpfcpEndpoint.createCommissionParticipant(
-//        Commission.Id("7a0a6a1f-ca13-4b64-8cf7-c8e33df3b50a"),
+//        Commission.Id("05c54e94-efaf-4c5c-8984-f85f55edbde7"),
 //        AUID(session.auid),
 //        CommissionParticipant.Role.HEAD_OF_EXPERTS,
 //        Token.Id(session.token)
 //    ))
 //    println(lpfcpEndpoint.getCommissionParticipantByCommissionIdAndAUID(Commission.Id("7a0a6a1f-ca13-4b64-8cf7-c8e33df3b50a"), AUID(session.auid)))
 
+//    println(lpfcpEndpoint.getCommissionsByParticipant(
+//        AUID(session.auid),
+//        Pagination(0, 1000)
+//    ))
+
+//    println(lpfcpEndpoint.createCommissionParticipant(
+//        Commission.Id("7405b7a0-3df9-422d-9dee-faec880cc2a6"),
+//        AUID(14),
+//        CommissionParticipant.Role.HEAD_OF_EXPERTS,
+//        Token.Id(session.token)
+//    ))
+//    println(lpfcpEndpoint.createCommissionParticipant(
+//        Commission.Id("4b70ee7d-ef8a-490f-9fcb-13989884d681"),
+//        AUID(14),
+//        CommissionParticipant.Role.HEAD_OF_EXPERTS,
+//        Token.Id(session.token)
+//    ))
+//    println(lpfcpEndpoint.createCommissionParticipant(
+//        Commission.Id("fb8920ab-b593-4fa1-94e6-3db6adc15db5"),
+//        AUID(14),
+//        CommissionParticipant.Role.HEAD_OF_EXPERTS,
+//        Token.Id(session.token)
+//    ))
+//    println(lpfcpEndpoint.createCommissionParticipant(
+//        Commission.Id("edca9133-c8ec-4b49-9124-a25529a196a4"),
+//        AUID(14),
+//        CommissionParticipant.Role.EXPERT,
+//        Token.Id(session.token)
+//    ))
+//    println(lpfcpEndpoint.createCommissionParticipant(
+//        Commission.Id("9eec405a-7d8e-4c4a-9411-9a5568bcc6f8"),
+//        AUID(session.auid), // Me but not @nazik_rachok
+//        CommissionParticipant.Role.HEAD_OF_EXPERTS,
+//        Token.Id(session.token)
+//    ))
+
     // <============ Create wine sample ============>
 
 //    println(lpfcpEndpoint.createWineSample(
-//        Commission.Id("7a0a6a1f-ca13-4b64-8cf7-c8e33df3b50a"),
-//        Wine.Id("6bfc6963-b2cc-44e3-8028-885af8233a40"),
+//        Commission.Id("05c54e94-efaf-4c5c-8984-f85f55edbde7"),
+//        Wine.Id("654fbf45-fddf-4311-b46e-94c3691370c9"),
 //        WineSample.Code("1-A-3-60-102"),
 //        WineSample.Id.NONE, // WineSample.Id("a8a7b1a1-9d0c-450e-9738-b3c8bd489961"),
 //        Token.Id(session.token)
 //    ))
 //    println(lpfcpEndpoint.getWineSample(WineSample.Id("2f3fbf6d-e770-42a5-a754-a3d0c3734edd")))
 //    println(lpfcpEndpoint.getWineSampleByCommissionIdAndCode(Commission.Id("7a0a6a1f-ca13-4b64-8cf7-c8e33df3b50a"), WineSample.Code("1-A-3-60-102")))
+
+    println(lpfcpEndpoint.createWineSample(
+        Commission.Id("7405b7a0-3df9-422d-9dee-faec880cc2a6"),
+        Wine.Id("654fbf45-fddf-4311-b46e-94c3691370c9"),
+        WineSample.Code("1-A-3-60-102"),
+        WineSample.Id.NONE, // WineSample.Id("a8a7b1a1-9d0c-450e-9738-b3c8bd489961"),
+        Token.Id(session.token)
+    ))
+    println(lpfcpEndpoint.createWineSample(
+        Commission.Id("4b70ee7d-ef8a-490f-9fcb-13989884d681"),
+        Wine.Id("654fbf45-fddf-4311-b46e-94c3691370c9"),
+        WineSample.Code("1-A-3-60-102"),
+        WineSample.Id.NONE, // WineSample.Id("a8a7b1a1-9d0c-450e-9738-b3c8bd489961"),
+        Token.Id(session.token)
+    ))
+    println(lpfcpEndpoint.createWineSample(
+        Commission.Id("edca9133-c8ec-4b49-9124-a25529a196a4"),
+        Wine.Id("654fbf45-fddf-4311-b46e-94c3691370c9"),
+        WineSample.Code("1-A-3-60-102"),
+        WineSample.Id.NONE, // WineSample.Id("a8a7b1a1-9d0c-450e-9738-b3c8bd489961"),
+        Token.Id(session.token)
+    ))
+    println(lpfcpEndpoint.createWineSample(
+        Commission.Id("9eec405a-7d8e-4c4a-9411-9a5568bcc6f8"),
+        Wine.Id("654fbf45-fddf-4311-b46e-94c3691370c9"),
+        WineSample.Code("1-A-3-60-102"),
+        WineSample.Id.NONE, // WineSample.Id("a8a7b1a1-9d0c-450e-9738-b3c8bd489961"),
+        Token.Id(session.token)
+    ))
 
 
 
@@ -210,7 +303,16 @@ fun main() {
 
 
 
-    // <============ Change Username ============>
+    // <============ Start Competition  ============>
+//    println(lpfcpEndpoint.getCommissionParticipantByCommissionIdAndAUID(
+//        Commission.Id("05c54e94-efaf-4c5c-8984-f85f55edbde7"),
+//        AUID(session.auid)
+//    ))
+//    println(lpfcpEndpoint.startCommission(
+//        AUID(session.auid),
+//        Commission.Id("05c54e94-efaf-4c5c-8984-f85f55edbde7"),
+//        Token.Id(session.token)
+//    ))
 
     println(System.currentTimeMillis() - startedAt)
 }

@@ -1,5 +1,6 @@
 package infrastructure.persistence.repositories
 
+import com.axus.id.model.value.AUID
 import com.axus.winelore.model.entity.Wine
 import com.axus.winelore.model.entity.Competition
 import domain.ports.repositories.CompetitionRepository
@@ -30,20 +31,11 @@ class CompetitionRepositoryImpl : CompetitionRepository {
             ?.let { CompetitionsTable.fromRow(it) }
     }
 
-    override suspend fun updateStatus(
-        atom: Atom,
-        id: Competition.Id,
-        status: Competition.Status
-    ) = AtomarixExposedAdapter.runWithAdapter(atom) {
-        CompetitionsTable.update({ CompetitionsTable.id eq id.value })
-            { it[CompetitionsTable.status] = status }
-            .let {  }
-    }
-
-    override suspend fun updateCurrentWineId(atom: Atom, id: Competition.Id, currentWine: Wine.Id) = AtomarixExposedAdapter.runWithAdapter(atom) {
-        CompetitionsTable.update({ CompetitionsTable.id eq id.value })
-            { it[CompetitionsTable.currentWine] = currentWine.value }
-            .let {  }
+    override suspend fun filter(atom: Atom, organizer: AUID?, pagination: Pagination): List<Competition> = AtomarixExposedAdapter.runWithAdapter(atom) {
+        filterQuery(organizer)
+            .orderBy(CompetitionsTable.plannedStartAt to SortOrder.DESC)
+            .offset(pagination.offset).limit(pagination.itemsPerPage)
+            .map { CompetitionsTable.fromRow(it) }
     }
 
     override suspend fun count(atom: Atom, pagination: Pagination?): Long {
@@ -84,4 +76,9 @@ class CompetitionRepositoryImpl : CompetitionRepository {
     override suspend fun upsert(atom: Atom, entity: Competition): Competition {
         TODO("Not yet implemented")
     }
+
+
+
+    fun filterQuery(organizer: AUID?): Query = CompetitionsTable.selectAll()
+        .let { if(organizer != null) it.andWhere { CompetitionsTable.organizer eq organizer.value } else it }
 }

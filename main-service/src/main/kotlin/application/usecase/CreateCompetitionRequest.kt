@@ -6,13 +6,13 @@ import com.axus.id.model.entity.Token
 import com.axus.id.model.value.AUID
 import com.axus.winelore.WineLorePermissionBuilder
 import com.axus.winelore.model.InsufficientPermissionsException
-import com.axus.winelore.model.CompetitionNameIsAlreadyUsedException
 import com.axus.winelore.model.entity.Competition
 import com.axus.winelore.model.entity.Competition.Name
 import domain.ports.repositories.CompetitionRepository
 import eth.likespro.atomarix.Atom.Companion.atomic
 import eth.likespro.commons.models.value.Timestamp
 import kotlinx.serialization.Serializable
+import org.koin.java.KoinJavaComponent.get
 import org.koin.java.KoinJavaComponent.inject
 
 @Serializable
@@ -23,7 +23,7 @@ data class CreateCompetitionRequest(
     val tokenId: Token.Id
 ) {
     suspend fun execute(): Competition {
-        val session: Session by inject(Session::class.java)
+        val session: Session = get<Session>(Session::class.java).refreshedIfExpired()
         val competitionRepository: CompetitionRepository by inject(CompetitionRepository::class.java)
 
         if(!session.hasTokenPermission(tokenId.value, FullPermission(WineLorePermissionBuilder.createCompetition(AUID(session.auid), organizer))))
@@ -37,7 +37,7 @@ data class CreateCompetitionRequest(
 
         return atomic {
             if(competitionRepository.isExistingByName(this, name))
-                throw CompetitionNameIsAlreadyUsedException()
+                throw Competition.NameIsAlreadyUsedException()
             competitionRepository.create(this, competition)
         }
     }

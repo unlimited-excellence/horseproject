@@ -26,6 +26,7 @@ dependencies {
     implementation("io.github.likespro:atomarix-exposed:1.0.0")
     implementation("io.github.likespro:commons-core:3.1.0")
     implementation("io.github.likespro:commons-reflection:3.1.0")
+    implementation("io.github.likespro:commons-network:3.1.0")
     implementation("io.github.likespro:lpfcp-core:1.1.0")
     implementation("io.github.likespro:lpfcp-ktor:1.1.0")
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")

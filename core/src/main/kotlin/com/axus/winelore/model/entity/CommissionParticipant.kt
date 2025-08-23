@@ -14,6 +14,10 @@ data class CommissionParticipant(
     val auid: AUID,
     val role: Role
 ): Entity<CommissionParticipant.Id> {
+    open class IsIncorrectException(override val message: String) : RuntimeException()
+    class CompetitionIdAndAUIDAreAlreadyUsedException : IsIncorrectException("CommissionParticipant Competition.Id and AUID are already used.")
+    class IsUnavailableException : IsIncorrectException("CommissionParticipant is unavailable for this Commission.")
+
     @Serializable
     data class Id(
         val value: String = UUID.randomUUID().toString()

@@ -1,0 +1,494 @@
+openapi: "3.1.0"
+info:
+  title: "winelore API"
+  description: "winelore API"
+  version: "1.0.0"
+servers:
+  - url: "http://months-demonstration.gl.at.ply.gg:26709"
+paths:
+  /createCommission:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCommissionRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RESTAPIResponse_CommissionDTO"
+  /createCompetition:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCompetitionRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RESTAPIResponse_CompetitionDTO"
+  /createWine:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWineRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RESTAPIResponse_Unit"
+  /filterCompetitions:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterCompetitionsRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RESTAPIResponse_List<? extends CompetitionDTO>"
+  /getCommissionParticipantByCommissionIdAndAUID:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetCommissionParticipantByCommissionIdAndAUIDRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RESTAPIResponse_CompetitionParticipantDTO"
+  /getCommissionsByParticipant:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetCommissionsByParticipantRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RESTAPIResponse_List<? extends PairOfCommissionAndCommissionParticipantDTO>"
+  /startCommission:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StartCommissionRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RESTAPIResponse_Unit"
+components:
+  schemas:
+    CreateCommissionRequest:
+      type: "object"
+      properties:
+        competitionId:
+          type: "string"
+        name:
+          type: "string"
+        tokenId:
+          type: "string"
+      required:
+        - "competitionId"
+        - "name"
+        - "tokenId"
+    CommissionDTO:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        competitionId:
+          type: "string"
+        name:
+          type: "string"
+        isApproved:
+          type: "boolean"
+        currentWineSampleId:
+          type: "string"
+        startedAt:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        endedAt:
+          type: "integer"
+          format: "int64"
+          nullable: true
+      required:
+        - "id"
+        - "competitionId"
+        - "name"
+        - "isApproved"
+        - "currentWineSampleId"
+    Error:
+      type: "object"
+      properties:
+        exceptionClass:
+          type: "string"
+        stackTrace:
+          type: "string"
+        message:
+          type: "string"
+          nullable: true
+        cause:
+          type: "string"
+          nullable: true
+        localizedMessage:
+          type: "string"
+          nullable: true
+      required:
+        - "exceptionClass"
+        - "stackTrace"
+    RESTAPIResponse:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+        error:
+          nullable: true
+          $ref: "#/components/schemas/Error"
+        metadata:
+          type: "string"
+      required:
+        - "success"
+        - "metadata"
+    RESTAPIResponse_CommissionDTO:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+        data:
+          $ref: "#/components/schemas/CommissionDTO"
+        error:
+          $ref: "#/components/schemas/Error"
+        metadata:
+          type: "string"
+    CreateCompetitionRequest:
+      type: "object"
+      properties:
+        organizer:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+        plannedStartAt:
+          type: "integer"
+          format: "int64"
+        tokenId:
+          type: "string"
+      required:
+        - "organizer"
+        - "name"
+        - "plannedStartAt"
+        - "tokenId"
+    CompetitionDTO:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        organizer:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+        plannedStartAt:
+          type: "integer"
+          format: "int64"
+      required:
+        - "id"
+        - "organizer"
+        - "name"
+        - "plannedStartAt"
+    RESTAPIResponse_CompetitionDTO:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+        data:
+          $ref: "#/components/schemas/CompetitionDTO"
+        error:
+          $ref: "#/components/schemas/Error"
+        metadata:
+          type: "string"
+    CreateWineRequest:
+      type: "object"
+      properties:
+        producer:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+        iteration:
+          type: "integer"
+          format: "int64"
+        color:
+          type: "string"
+          enum:
+            - "RED"
+            - "WHITE"
+            - "ROSE"
+        type:
+          type: "string"
+          enum:
+            - "STILL"
+            - "SPARKLING"
+            - "SPIRITOUS"
+        tokenId:
+          type: "string"
+      required:
+        - "producer"
+        - "name"
+        - "iteration"
+        - "color"
+        - "type"
+        - "tokenId"
+    Unit:
+      type: "object"
+      properties: { }
+    RESTAPIResponse_Unit:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+        data:
+          $ref: "#/components/schemas/Unit"
+        error:
+          $ref: "#/components/schemas/Error"
+        metadata:
+          type: "string"
+    Timestamp:
+      type: "object"
+      properties:
+        value:
+          type: "integer"
+          format: "int64"
+      required:
+        - "value"
+    Period:
+      type: "object"
+      properties:
+        from:
+          $ref: "#/components/schemas/Timestamp"
+        to:
+          $ref: "#/components/schemas/Timestamp"
+      required:
+        - "from"
+        - "to"
+    Sort:
+      type: "object"
+      properties:
+        by:
+          type: "string"
+        order:
+          type: "string"
+          enum:
+            - "ASC"
+            - "DESC"
+      required:
+        - "by"
+        - "order"
+    Pagination:
+      type: "object"
+      properties:
+        page:
+          type: "integer"
+          format: "int32"
+        itemsPerPage:
+          type: "integer"
+          format: "int32"
+        search:
+          type: "string"
+          nullable: true
+        period:
+          nullable: true
+          $ref: "#/components/schemas/Period"
+        sort:
+          nullable: true
+          $ref: "#/components/schemas/Sort"
+      required:
+        - "page"
+        - "itemsPerPage"
+    FilterCompetitionsRequest:
+      type: "object"
+      properties:
+        organizer:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - "pagination"
+    RESTAPIResponse_List<? extends CompetitionDTO>:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+        data:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/CompetitionDTO"
+        error:
+          $ref: "#/components/schemas/Error"
+        metadata:
+          type: "string"
+    GetCommissionParticipantByCommissionIdAndAUIDRequest:
+      type: "object"
+      properties:
+        commissionId:
+          type: "string"
+        auid:
+          type: "integer"
+          format: "int64"
+      required:
+        - "commissionId"
+        - "auid"
+    CompetitionParticipantDTO:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        commissionId:
+          type: "string"
+        auid:
+          type: "integer"
+          format: "int64"
+        role:
+          type: "string"
+          enum:
+            - "HEAD_OF_EXPERTS"
+            - "EXPERT"
+      required:
+        - "id"
+        - "commissionId"
+        - "auid"
+        - "role"
+    RESTAPIResponse_CompetitionParticipantDTO:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+        data:
+          $ref: "#/components/schemas/CompetitionParticipantDTO"
+        error:
+          $ref: "#/components/schemas/Error"
+        metadata:
+          type: "string"
+    GetCommissionsByParticipantRequest:
+      type: "object"
+      properties:
+        auid:
+          type: "integer"
+          format: "int64"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - "auid"
+        - "pagination"
+    PairOfCommissionAndCommissionParticipantDTO:
+      type: "object"
+      properties:
+        commissionId:
+          type: "string"
+        competitionId:
+          type: "string"
+        name:
+          type: "string"
+        isApproved:
+          type: "boolean"
+        currentWineSampleId:
+          type: "string"
+          nullable: true
+        startedAt:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        endedAt:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        participantId:
+          type: "string"
+        auid:
+          type: "integer"
+          format: "int64"
+        role:
+          type: "string"
+          enum:
+            - "HEAD_OF_EXPERTS"
+            - "EXPERT"
+      required:
+        - "commissionId"
+        - "competitionId"
+        - "name"
+        - "isApproved"
+        - "participantId"
+        - "auid"
+        - "role"
+    RESTAPIResponse_List<? extends PairOfCommissionAndCommissionParticipantDTO>:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+        data:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/PairOfCommissionAndCommissionParticipantDTO"
+        error:
+          $ref: "#/components/schemas/Error"
+        metadata:
+          type: "string"
+    StartCommissionRequest:
+      type: "object"
+      properties:
+        auid:
+          type: "integer"
+          format: "int64"
+        commissionId:
+          type: "string"
+        tokenId:
+          type: "string"
+      required:
+        - "auid"
+        - "commissionId"
+        - "tokenId"

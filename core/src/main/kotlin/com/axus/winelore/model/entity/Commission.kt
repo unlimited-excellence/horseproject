@@ -12,10 +12,18 @@ data class Commission(
     override val id: Id = Id(),
     val competitionId: Competition.Id,
     val name: Name,
+    var isApproved: Boolean = false,
     var currentWineSampleId: WineSample.Id? = null,
     var startedAt: Timestamp? = null,
     val endedAt: Timestamp? = null,
 ): Entity<Commission.Id> {
+    class CompetitionIdAndNameAreAlreadyUsedException : RuntimeException("Commission Competition.Id and Name are already used.")
+    class IsNotApprovedException : RuntimeException("Commission must be approved before starting.")
+    class IsNotStartedException : RuntimeException("Commission is not started yet.")
+    class IsAlreadyStartedException : RuntimeException("Commission is already started.")
+    class IsAlreadyEndedException : RuntimeException("Commission is already ended.")
+    class NoWineSamplesException : RuntimeException("Commission must have at least one WineSample to start.")
+
     @Serializable
     data class Id(
         val value: String = UUID.randomUUID().toString()
@@ -43,9 +51,9 @@ data class Commission(
         }
 
         override fun throwIfInvalid(): Name {
-            if(value.length > 64)
+            if (value.length > 64)
                 throw IsInvalidException("Commission.Name length must be not greater than 64 characters")
-            if(value.startsWith(" ") || value.endsWith(" "))
+            if (value.startsWith(" ") || value.endsWith(" "))
                 throw IsInvalidException("Commission.Name must not start or end with spaces")
 
             return this

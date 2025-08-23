@@ -6,12 +6,12 @@ import com.axus.id.model.entity.Token
 import com.axus.id.model.value.AUID
 import com.axus.winelore.WineLorePermissionBuilder
 import com.axus.winelore.model.InsufficientPermissionsException
-import com.axus.winelore.model.WineProducerAndNameAndIterationAreAlreadyUsedException
 import com.axus.winelore.model.entity.Wine
 import domain.ports.repositories.WineRepository
 import eth.likespro.atomarix.Atom.Companion.atomic
 import eth.likespro.commons.models.value.Iteration
 import kotlinx.serialization.Serializable
+import org.koin.java.KoinJavaComponent.get
 import org.koin.java.KoinJavaComponent.inject
 
 @Serializable
@@ -24,7 +24,7 @@ data class CreateWineRequest(
     val tokenId: Token.Id
 ) {
     suspend fun execute(): Wine {
-        val session: Session by inject(Session::class.java)
+        val session: Session = get<Session>(Session::class.java).refreshedIfExpired()
         val wineRepository: WineRepository by inject(WineRepository::class.java)
 
         if(!session.hasTokenPermission(tokenId.value, FullPermission(WineLorePermissionBuilder.createWine(AUID(session.auid), producer))))
@@ -33,7 +33,7 @@ data class CreateWineRequest(
         val wine = Wine(Wine.Id(), producer, name, iteration, color, type)
         return atomic {
             if(wineRepository.isExistingByProducerAndNameAndIteration(this, producer, name, iteration))
-                throw WineProducerAndNameAndIterationAreAlreadyUsedException()
+                throw Wine.ProducerAndNameAndIterationAreAlreadyUsedException()
             wineRepository.create(this, wine)
         }
     }
