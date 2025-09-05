@@ -7,6 +7,7 @@ import com.axus.winelore.model.entity.CommissionParticipant
 import eth.likespro.atomarix.Atom
 import eth.likespro.atomarix.Atom.Companion.atomic
 import eth.likespro.atomarix.AtomarixRepository
+import eth.likespro.commons.models.Pagination
 
 interface CommissionParticipantRepository : AtomarixRepository<CommissionParticipant, CommissionParticipant.Id> {
     suspend fun isExistingByCommissionIdAndAUID(commissionId: Commission.Id, auid: AUID): Boolean = atomic { isExistingByCommissionIdAndAUID(this, commissionId, auid) }
@@ -14,4 +15,7 @@ interface CommissionParticipantRepository : AtomarixRepository<CommissionPartici
 
     suspend fun findByCommissionIdAndAUID(commissionId: Commission.Id, auid: AUID): CommissionParticipant? = atomic { findByCommissionIdAndAUID(this, commissionId, auid) }
     suspend fun findByCommissionIdAndAUID(atom: Atom, commissionId: Commission.Id, auid: AUID): CommissionParticipant?
+
+    suspend fun filter(commissionId: Commission.Id?, auid: AUID?, role: CommissionParticipant.Role?, pagination: Pagination): List<CommissionParticipant> = atomic { filter(this, commissionId, auid, role, pagination) }
+    suspend fun filter(atom: Atom, commissionId: Commission.Id?, auid: AUID?, role: CommissionParticipant.Role?, pagination: Pagination): List<CommissionParticipant>
 }

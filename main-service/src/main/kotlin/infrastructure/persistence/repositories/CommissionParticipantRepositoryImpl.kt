@@ -8,10 +8,8 @@ import eth.likespro.atomarix.Atom
 import eth.likespro.atomarix.adapters.AtomarixExposedAdapter
 import eth.likespro.commons.models.Pagination
 import infrastructure.persistence.tables.CommissionParticipantsTable
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.andWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
+import infrastructure.persistence.tables.CompetitionsTable
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CommissionParticipantRepositoryImpl : CommissionParticipantRepository {
@@ -42,6 +40,18 @@ class CommissionParticipantRepositoryImpl : CommissionParticipantRepository {
             .andWhere { CommissionParticipantsTable.auid eq auid.value }
             .singleOrNull()
             ?.let { CommissionParticipantsTable.fromRow(it) }
+    }
+
+    override suspend fun filter(
+        atom: Atom,
+        commissionId: Commission.Id?,
+        auid: AUID?,
+        role: CommissionParticipant.Role?,
+        pagination: Pagination
+    ): List<CommissionParticipant> = AtomarixExposedAdapter.runWithAdapter(atom) {
+        filterQuery(commissionId, auid, role)
+            .offset(pagination.offset).limit(pagination.itemsPerPage)
+            .map { CommissionParticipantsTable.fromRow(it) }
     }
 
     override suspend fun count(atom: Atom, pagination: Pagination?): Long {
@@ -77,4 +87,9 @@ class CommissionParticipantRepositoryImpl : CommissionParticipantRepository {
     override suspend fun upsert(atom: Atom, entity: CommissionParticipant): CommissionParticipant {
         TODO("Not yet implemented")
     }
+
+    fun filterQuery(commissionId: Commission.Id?, auid: AUID?, role: CommissionParticipant.Role?): Query = CommissionParticipantsTable.selectAll()
+        .let { if(commissionId != null) it.andWhere { CommissionParticipantsTable.commissionId eq commissionId.value } else it }
+        .let { if(auid != null) it.andWhere { CommissionParticipantsTable.auid eq auid.value } else it }
+        .let { if(role != null) it.andWhere { CommissionParticipantsTable.role eq role } else it }
 }

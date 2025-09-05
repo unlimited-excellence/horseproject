@@ -7,7 +7,7 @@ import eth.likespro.commons.network.RESTAPIUtils.toResponse
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import presentation.rest.dto.CompetitionParticipantDTO
+import presentation.rest.dto.CommissionParticipantDTO
 import presentation.rest.dto.PairOfCommissionAndCommissionParticipantDTO
 import presentation.rest.exceptionDetailsConfiguration
 import presentation.rest.lpfcpGateway
@@ -23,7 +23,7 @@ fun Routing.commissionParticipantRouting() {
                 )
             }
                 .applyExceptionDetailsConfiguration(exceptionDetailsConfiguration)
-                .toResponse { it?.let { CompetitionParticipantDTO(it) } }
+                .toResponse { it?.let { CommissionParticipantDTO(it) } }
         )
     }
     post("/getCommissionsByParticipant") {
@@ -37,6 +37,21 @@ fun Routing.commissionParticipantRouting() {
             }
                 .applyExceptionDetailsConfiguration(exceptionDetailsConfiguration)
                 .toResponse { it.map { PairOfCommissionAndCommissionParticipantDTO(it) } }
+        )
+    }
+    post("/filterCommissionParticipants") {
+        val request = call.receive<FilterCommissionParticipantsRequest>()
+        call.respond(
+            EncodableResult.runCatching {
+                lpfcpGateway.filterCommissionParticipants(
+                    request.commissionId?.let { Commission.Id(it) },
+                    request.auid?.let { AUID(it) },
+                    request.role,
+                    request.pagination,
+                )
+            }
+                .applyExceptionDetailsConfiguration(exceptionDetailsConfiguration)
+                .toResponse { it.map { CommissionParticipantDTO(it) } }
         )
     }
 }

@@ -8,8 +8,6 @@ import com.axus.winelore.model.entity.WineSampleAssessment.Mark
 import eth.likespro.commons.models.Pagination
 import eth.likespro.commons.models.value.Iteration
 import eth.likespro.commons.models.value.Timestamp
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.Contextual
 import org.json.JSONObject
 
 interface WineLoreEndpoint {
@@ -50,6 +48,7 @@ interface WineLoreEndpoint {
     fun isExistingCommissionParticipantByCommissionIdAndAUID(commissionId: Commission.Id, auid: AUID): Boolean
     fun getCommissionParticipantByCommissionIdAndAUID(commissionId: Commission.Id, auid: AUID): CommissionParticipant?
     fun getCommissionsByParticipant(auid: AUID, pagination: Pagination): List<Pair<Commission, CommissionParticipant>>
+    fun filterCommissionParticipants(commissionId: Commission.Id?, auid: AUID?, role: CommissionParticipant.Role?, pagination: Pagination): List<CommissionParticipant>
 
     // <============ WineSample Service ============>
     

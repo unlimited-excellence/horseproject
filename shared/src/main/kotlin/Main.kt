@@ -1,10 +1,7 @@
 import com.axus.id.Session
-import com.axus.id.model.entity.Token
 import com.axus.id.model.value.AUID
 import com.axus.winelore.WineLoreEndpoint
-import com.axus.winelore.model.entity.*
 import eth.likespro.commons.models.Pagination
-import eth.likespro.commons.models.value.Iteration
 import eth.likespro.lpfcp.LPFCP
 
 fun main() {
@@ -18,6 +15,16 @@ fun main() {
 //        11,
 //        ".*"
 //    ))))
+
+    /*lpfcpEndpoint.createCommissionParticipant(
+        Commission.Id("3ab9abf0-8dc0-4420-ac66-5a39ba3d1f5a"),
+        AUID(1),
+        CommissionParticipant.Role.HEAD_OF_EXPERTS,
+        Token.Id("ZrjLlK8CHKOcIYyYpncdzn1949DN8-g72kkgKN-8y85mHbf7eN9THKS8mCA4q_k1")
+    ) */
+    lpfcpEndpoint.filterCommissionParticipants(null, AUID(1), null, Pagination(0, 100)).forEach {
+        println(it)
+    }
 
     // <============ Create wine ============>
 
@@ -143,34 +150,34 @@ fun main() {
 //    println(lpfcpEndpoint.getWineSample(WineSample.Id("2f3fbf6d-e770-42a5-a754-a3d0c3734edd")))
 //    println(lpfcpEndpoint.getWineSampleByCommissionIdAndCode(Commission.Id("7a0a6a1f-ca13-4b64-8cf7-c8e33df3b50a"), WineSample.Code("1-A-3-60-102")))
 
-    println(lpfcpEndpoint.createWineSample(
-        Commission.Id("7405b7a0-3df9-422d-9dee-faec880cc2a6"),
-        Wine.Id("654fbf45-fddf-4311-b46e-94c3691370c9"),
-        WineSample.Code("1-A-3-60-102"),
-        WineSample.Id.NONE, // WineSample.Id("a8a7b1a1-9d0c-450e-9738-b3c8bd489961"),
-        Token.Id(session.token)
-    ))
-    println(lpfcpEndpoint.createWineSample(
-        Commission.Id("4b70ee7d-ef8a-490f-9fcb-13989884d681"),
-        Wine.Id("654fbf45-fddf-4311-b46e-94c3691370c9"),
-        WineSample.Code("1-A-3-60-102"),
-        WineSample.Id.NONE, // WineSample.Id("a8a7b1a1-9d0c-450e-9738-b3c8bd489961"),
-        Token.Id(session.token)
-    ))
-    println(lpfcpEndpoint.createWineSample(
-        Commission.Id("edca9133-c8ec-4b49-9124-a25529a196a4"),
-        Wine.Id("654fbf45-fddf-4311-b46e-94c3691370c9"),
-        WineSample.Code("1-A-3-60-102"),
-        WineSample.Id.NONE, // WineSample.Id("a8a7b1a1-9d0c-450e-9738-b3c8bd489961"),
-        Token.Id(session.token)
-    ))
-    println(lpfcpEndpoint.createWineSample(
-        Commission.Id("9eec405a-7d8e-4c4a-9411-9a5568bcc6f8"),
-        Wine.Id("654fbf45-fddf-4311-b46e-94c3691370c9"),
-        WineSample.Code("1-A-3-60-102"),
-        WineSample.Id.NONE, // WineSample.Id("a8a7b1a1-9d0c-450e-9738-b3c8bd489961"),
-        Token.Id(session.token)
-    ))
+//    println(lpfcpEndpoint.createWineSample(
+//        Commission.Id("7405b7a0-3df9-422d-9dee-faec880cc2a6"),
+//        Wine.Id("654fbf45-fddf-4311-b46e-94c3691370c9"),
+//        WineSample.Code("1-A-3-60-102"),
+//        WineSample.Id.NONE, // WineSample.Id("a8a7b1a1-9d0c-450e-9738-b3c8bd489961"),
+//        Token.Id(session.token)
+//    ))
+//    println(lpfcpEndpoint.createWineSample(
+//        Commission.Id("4b70ee7d-ef8a-490f-9fcb-13989884d681"),
+//        Wine.Id("654fbf45-fddf-4311-b46e-94c3691370c9"),
+//        WineSample.Code("1-A-3-60-102"),
+//        WineSample.Id.NONE, // WineSample.Id("a8a7b1a1-9d0c-450e-9738-b3c8bd489961"),
+//        Token.Id(session.token)
+//    ))
+//    println(lpfcpEndpoint.createWineSample(
+//        Commission.Id("edca9133-c8ec-4b49-9124-a25529a196a4"),
+//        Wine.Id("654fbf45-fddf-4311-b46e-94c3691370c9"),
+//        WineSample.Code("1-A-3-60-102"),
+//        WineSample.Id.NONE, // WineSample.Id("a8a7b1a1-9d0c-450e-9738-b3c8bd489961"),
+//        Token.Id(session.token)
+//    ))
+//    println(lpfcpEndpoint.createWineSample(
+//        Commission.Id("9eec405a-7d8e-4c4a-9411-9a5568bcc6f8"),
+//        Wine.Id("654fbf45-fddf-4311-b46e-94c3691370c9"),
+//        WineSample.Code("1-A-3-60-102"),
+//        WineSample.Id.NONE, // WineSample.Id("a8a7b1a1-9d0c-450e-9738-b3c8bd489961"),
+//        Token.Id(session.token)
+//    ))
 
 
 

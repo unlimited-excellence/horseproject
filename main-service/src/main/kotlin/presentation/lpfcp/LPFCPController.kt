@@ -109,6 +109,16 @@ class MainServiceImpl : WineLoreEndpoint {
         GetCommissionsByParticipantRequest(auid, pagination).execute()
     }
 
+    @LPFCP.ExposedFunction
+    override fun filterCommissionParticipants(
+        commissionId: Commission.Id?,
+        auid: AUID?,
+        role: CommissionParticipant.Role?,
+        pagination: Pagination
+    ): List<CommissionParticipant> = runBlocking {
+        FilterCommissionParticipantsRequest(commissionId, auid, role, pagination).execute()
+    }
+
 
     // <============ Commission Service ============>
 

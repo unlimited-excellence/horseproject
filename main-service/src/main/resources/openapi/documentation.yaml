@@ -54,6 +54,22 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/RESTAPIResponse_Unit"
+  /filterCommissionParticipants:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterCommissionParticipantsRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RESTAPIResponse_List<? extends CommissionParticipantDTO>"
   /filterCompetitions:
     post:
       description: ""
@@ -85,7 +101,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/RESTAPIResponse_CompetitionParticipantDTO"
+                $ref: "#/components/schemas/RESTAPIResponse_CommissionParticipantDTO"
   /getCommissionsByParticipant:
     post:
       description: ""
@@ -348,6 +364,59 @@ components:
       required:
         - "page"
         - "itemsPerPage"
+    FilterCommissionParticipantsRequest:
+      type: "object"
+      properties:
+        commissionId:
+          type: "string"
+          nullable: true
+        auid:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        role:
+          type: "string"
+          nullable: true
+          enum:
+            - "HEAD_OF_EXPERTS"
+            - "EXPERT"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - "pagination"
+    CommissionParticipantDTO:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        commissionId:
+          type: "string"
+        auid:
+          type: "integer"
+          format: "int64"
+        role:
+          type: "string"
+          enum:
+            - "HEAD_OF_EXPERTS"
+            - "EXPERT"
+      required:
+        - "id"
+        - "commissionId"
+        - "auid"
+        - "role"
+    RESTAPIResponse_List<? extends CommissionParticipantDTO>:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+        data:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/CommissionParticipantDTO"
+        error:
+          $ref: "#/components/schemas/Error"
+        metadata:
+          type: "string"
     FilterCompetitionsRequest:
       type: "object"
       properties:
@@ -383,33 +452,13 @@ components:
       required:
         - "commissionId"
         - "auid"
-    CompetitionParticipantDTO:
-      type: "object"
-      properties:
-        id:
-          type: "string"
-        commissionId:
-          type: "string"
-        auid:
-          type: "integer"
-          format: "int64"
-        role:
-          type: "string"
-          enum:
-            - "HEAD_OF_EXPERTS"
-            - "EXPERT"
-      required:
-        - "id"
-        - "commissionId"
-        - "auid"
-        - "role"
-    RESTAPIResponse_CompetitionParticipantDTO:
+    RESTAPIResponse_CommissionParticipantDTO:
       type: "object"
       properties:
         success:
           type: "boolean"
         data:
-          $ref: "#/components/schemas/CompetitionParticipantDTO"
+          $ref: "#/components/schemas/CommissionParticipantDTO"
         error:
           $ref: "#/components/schemas/Error"
         metadata:
