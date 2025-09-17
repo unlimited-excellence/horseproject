@@ -11,7 +11,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
-rootProject.name = "winelore"
+rootProject.name = "horseproject"
 include("core")
 include("shared")
 include("main-service")

@@ -1,20 +1,31 @@
+import com.axus.id.FullPermission
 import com.axus.id.Session
+import com.axus.id.model.entity.Token
 import com.axus.id.model.value.AUID
-import com.axus.winelore.WineLoreEndpoint
+import eth.likespro.commons.models.Option
+import org.unlimitedexcellence.horseproject.HorseProjectEndpoint
 import eth.likespro.commons.models.Pagination
+import eth.likespro.commons.reflection.ObjectEncoding.encodeObject
 import eth.likespro.lpfcp.LPFCP
+import org.unlimitedexcellence.horseproject.model.value.Amount
+import org.unlimitedexcellence.horseproject.model.value.Ticker
 
 fun main() {
-    val lpfcpEndpoint = LPFCP.getProcessor<WineLoreEndpoint>("http://localhost:50006/lpfcp")
+    val lpfcpEndpoint = LPFCP.getProcessor<HorseProjectEndpoint>("http://localhost:50008/lpfcp")
     val startedAt = System.currentTimeMillis()
 
     val session = Session(System.getenv("AXUS_ID_TEST_USER_AUID")?.toLongOrNull()!!, System.getenv("AXUS_ID_TEST_USER_TOKEN")!!).refreshedIfExpired()
-//    println(session.selfUser.createTokenSystem(listOf(FullPermission(
+//    println(Session.createWithPassword(System.getenv("AXUS_ID_TEST_USER_AUID").toLong(), System.getenv("AXUS_ID_TEST_USER_PASSWORD")).selfUser.createTokenSystem(listOf(
+//        FullPermission(
 //        session.auid,
 //        session.auid,
-//        11,
-//        ".*"
-//    ))))
+//        21,
+//        ".*" // Bad, but the only way to get all permissions now :((
+//    )
+//    )))
+
+    println(lpfcpEndpoint.fetchUserBalance(AUID(1), Ticker("HORSE")))
+    println(lpfcpEndpoint.createTransaction(AUID(session.auid), AUID(1), Ticker("HORSE"), Amount(1_000_000) /* 1 $HORSE */, Token.Id(session.token)))
 
     /*lpfcpEndpoint.createCommissionParticipant(
         Commission.Id("3ab9abf0-8dc0-4420-ac66-5a39ba3d1f5a"),
@@ -22,9 +33,9 @@ fun main() {
         CommissionParticipant.Role.HEAD_OF_EXPERTS,
         Token.Id("ZrjLlK8CHKOcIYyYpncdzn1949DN8-g72kkgKN-8y85mHbf7eN9THKS8mCA4q_k1")
     ) */
-    lpfcpEndpoint.filterCommissionParticipants(null, AUID(1), null, Pagination(0, 100)).forEach {
-        println(it)
-    }
+//    lpfcpEndpoint.filterCommissionParticipants(null, AUID(1), null, Pagination(0, 100)).forEach {
+//        println(it)
+//    }
 
     // <============ Create wine ============>
 

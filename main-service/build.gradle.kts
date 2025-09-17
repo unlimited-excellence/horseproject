@@ -14,6 +14,7 @@ application {
 
 repositories {
     mavenCentral()
+    maven("https://repo.repsy.io/mvn/likespro/maven")
     mavenLocal() // TODO Remove this when commons is published
 }
 
@@ -22,13 +23,13 @@ dependencies {
 
     implementation("io.github.likespro:axusid-client:0.0.1")
 
-    implementation("io.github.likespro:atomarix-core:1.0.0")
-    implementation("io.github.likespro:atomarix-exposed:1.0.0")
-    implementation("io.github.likespro:commons-core:3.1.0")
-    implementation("io.github.likespro:commons-reflection:3.1.0")
-    implementation("io.github.likespro:commons-network:3.1.0")
-    implementation("io.github.likespro:lpfcp-core:1.1.0")
-    implementation("io.github.likespro:lpfcp-ktor:1.1.0")
+    implementation("io.github.likespro:atomarix-core:1.0.0-1-disabled")
+    implementation("io.github.likespro:atomarix-exposed:1.0.0-1-disabled")
+    implementation("io.github.likespro:commons-core:3.2.0-1")
+    implementation("io.github.likespro:commons-reflection:3.2.0-1")
+    implementation("io.github.likespro:commons-network:3.2.0-1")
+    implementation("io.github.likespro:lpfcp-core:1.2.0-1")
+    implementation("io.github.likespro:lpfcp-ktor:1.2.0-1")
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
 
     implementation("io.insert-koin:koin-ktor:3.5.0")

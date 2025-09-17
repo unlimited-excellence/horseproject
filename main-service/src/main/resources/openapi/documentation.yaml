@@ -54,6 +54,22 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/RESTAPIResponse_Unit"
+  /createWineSampleAssessment:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWineSampleAssessmentRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RESTAPIResponse_WineSampleAssessmentDTO"
   /filterCommissionParticipants:
     post:
       description: ""
@@ -118,6 +134,22 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/RESTAPIResponse_List<? extends PairOfCommissionAndCommissionParticipantDTO>"
+  /getWineSample:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetWineSampleRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RESTAPIResponse_WineSampleDTO"
   /startCommission:
     post:
       description: ""
@@ -308,6 +340,72 @@ components:
           type: "boolean"
         data:
           $ref: "#/components/schemas/Unit"
+        error:
+          $ref: "#/components/schemas/Error"
+        metadata:
+          type: "string"
+    JSONObject:
+      type: "object"
+      properties: { }
+    CreateWineSampleAssessmentRequest:
+      type: "object"
+      properties:
+        commissionId:
+          type: "string"
+        from:
+          type: "integer"
+          format: "int64"
+        wineSampleId:
+          type: "string"
+        mark:
+          type: "integer"
+          format: "int32"
+        metadata:
+          $ref: "#/components/schemas/JSONObject"
+        tokenId:
+          type: "string"
+      required:
+        - "commissionId"
+        - "from"
+        - "wineSampleId"
+        - "mark"
+        - "metadata"
+        - "tokenId"
+    WineSampleAssessmentDTO:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        commissionId:
+          type: "string"
+        from:
+          type: "integer"
+          format: "int64"
+        wineSampleId:
+          type: "string"
+        mark:
+          type: "integer"
+          format: "int32"
+        metadata:
+          $ref: "#/components/schemas/JSONObject"
+        createdAt:
+          type: "integer"
+          format: "int64"
+      required:
+        - "id"
+        - "commissionId"
+        - "from"
+        - "wineSampleId"
+        - "mark"
+        - "metadata"
+        - "createdAt"
+    RESTAPIResponse_WineSampleAssessmentDTO:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+        data:
+          $ref: "#/components/schemas/WineSampleAssessmentDTO"
         error:
           $ref: "#/components/schemas/Error"
         metadata:
@@ -523,6 +621,43 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/PairOfCommissionAndCommissionParticipantDTO"
+        error:
+          $ref: "#/components/schemas/Error"
+        metadata:
+          type: "string"
+    GetWineSampleRequest:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+      required:
+        - "id"
+    WineSampleDTO:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        commissionId:
+          type: "string"
+        wineId:
+          type: "string"
+        code:
+          type: "string"
+        previousWineSampleId:
+          type: "string"
+      required:
+        - "id"
+        - "commissionId"
+        - "wineId"
+        - "code"
+        - "previousWineSampleId"
+    RESTAPIResponse_WineSampleDTO:
+      type: "object"
+      properties:
+        success:
+          type: "boolean"
+        data:
+          $ref: "#/components/schemas/WineSampleDTO"
         error:
           $ref: "#/components/schemas/Error"
         metadata:

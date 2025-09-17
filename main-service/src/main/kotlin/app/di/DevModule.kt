@@ -5,7 +5,7 @@ import infrastructure.persistence.DatabaseFactory
 import org.koin.dsl.module
 
 val devModule = module {
-    single { Session.createWithPassword(11, "hudhawWADhlawdaxfnwlAWdhawu") }
+    single { Session.createWithPassword(21, "hudhawWADhlawdaxfnwlAWdhawu") }
     single {
         DatabaseFactory(
             url = "jdbc:postgresql://aws-0-eu-central-1.pooler.supabase.com:5432/postgres",
