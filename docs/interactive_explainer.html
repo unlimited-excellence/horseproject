@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HORSE Project: Interactive Explainer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral (Cream, Slate, Amber) -->
+    <!-- Application Structure Plan: The SPA is designed as a thematic dashboard. It starts with a high-level vision, identifies the problem, and then presents the solution through a tabbed, interactive "Ecosystem Explorer." This structure allows users to digest the complex project in manageable, focused sections (Reward Engine, Tokenomics, Value Flow, Governance) rather than a linear scroll. The user flow is from broad concept to granular, interactive detail, which is optimal for understanding a complex system like HORSE. The core of the experience is hands-on exploration via calculators and dynamic charts, making abstract formulas and token flows tangible and easy to grasp. -->
+    <!-- Visualization & Content Choices: 
+        1. Reward Formula -> Goal: Explain the meritocratic reward model -> Viz: Interactive Bar Chart (Chart.js) + Sliders -> Interaction: Users manipulate competition parameters (participants, rank, type) to see how rewards change in real-time. Justification: Makes the non-linear, cubic formula intuitive and demonstrates the high reward for excellence.
+        2. 20/10/70 Split -> Goal: Clarify reward distribution -> Viz: Donut Chart (Chart.js) + Input Field -> Interaction: Users enter a total HORSE reward to see the dynamic split between participant, coach, and investors. Justification: A donut chart is the clearest way to show parts of a whole, making the economic model immediately understandable.
+        3. Ecosystem Diagram -> Goal: Show the relationship between all components -> Viz: HTML/CSS Diagram -> Interaction: Static visual reference within the relevant section. Justification: Recreating the diagram with HTML/CSS ensures responsiveness, thematic consistency, and avoids external image dependencies.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8; /* Cream */
+            color: #4A5568; /* Slate */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .nav-link.active {
+            color: #D97706; /* Amber */
+            border-bottom-color: #D97706;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #D97706;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #D97706;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="py-6 md:py-10">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800">The HORSE Project</h1>
+            <p class="mt-4 text-lg md:text-xl max-w-3xl mx-auto">An interactive ecosystem where intellectual achievement is transformed into a tangible, digital asset through the "Learn-to-Earn" model.</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 pb-16">
+        
+        <section id="problem" class="text-center bg-white p-8 rounded-2xl shadow-sm mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">The Problem: Undervalued Intellectual Capital</h2>
+            <p class="max-w-4xl mx-auto text-base">In our modern world, immense intellectual effort in fields like programming, mathematics, and science often goes without direct material reward. Traditional accolades like diplomas and medals don't capture the economic value created. This gap leads to dampened motivation and inefficient investment in the most valuable resource: human intellect.</p>
+        </section>
+        
+        <section id="solution" class="bg-white p-8 rounded-2xl shadow-sm">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">The Solution: A Learn-to-Earn Ecosystem</h2>
+                <p class="mt-4 max-w-4xl mx-auto">HORSE introduces a self-regulating economy that bridges this gap. By tokenizing success in verifiable intellectual competitions, we create a direct financial incentive for learning and a new asset class for investors. Explore the mechanics of our ecosystem below.</p>
+            </div>
+
+            <div class="border-b border-gray-200 mb-8">
+                <nav class="-mb-px flex justify-center space-x-4 md:space-x-8" aria-label="Tabs">
+                    <a data-tab="engine" class="nav-link active font-semibold py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Reward Engine
+                    </a>
+                    <a data-tab="economy" class="nav-link font-semibold py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Dual-Token Economy
+                    </a>
+                    <a data-tab="flow" class="nav-link font-semibold py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Value Flow
+                    </a>
+                     <a data-tab="governance" class="nav-link font-semibold py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        DAO Governance
+                    </a>
+                </nav>
+            </div>
+
+            <div id="tab-content">
+                <div id="engine" class="content-section active">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800">The Meritocratic Reward Engine</h3>
+                        <p class="mt-2 max-w-3xl mx-auto">New HORSE tokens are generated based on a non-linear formula that strongly favors excellence. This meritocratic system ensures that top performers receive disproportionately higher rewards, stimulating competition. Adjust the sliders below to see how rewards change based on performance and competition type.</p>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center bg-gray-50 p-6 rounded-lg">
+                        <div class="lg:col-span-1 space-y-6">
+                            <div>
+                                <label for="participants" class="font-medium">Total Participants (P)</label>
+                                <input id="participants" type="range" min="100" max="10000" value="2000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                <span id="participants-value" class="text-amber-600 font-bold">2000</span>
+                            </div>
+                            <div>
+                                <label for="rank" class="font-medium">Your Rank (S)</label>
+                                <input id="rank" type="range" min="1" max="2000" value="10" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                <span id="rank-value" class="text-amber-600 font-bold">10</span>
+                            </div>
+                             <div>
+                                <label for="coefficient" class="font-medium">Competition Type (K)</label>
+                                <select id="coefficient" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="1">Div. 4 (K=1)</option>
+                                    <option value="1.5">Div. 3 (K=1.5)</option>
+                                    <option value="2" selected>Div. 2 (K=2)</option>
+                                    <option value="2.5">Div. 1 + Div. 2 (K=2.5)</option>
+                                    <option value="3">Div. 1 (K=3)</option>
+                                </select>
+                            </div>
+                            <div class="text-center bg-white p-4 rounded-lg shadow-inner">
+                                <p class="text-gray-600">Your Calculated Reward:</p>
+                                <p id="reward-result" class="text-3xl font-bold text-amber-600">0.00 HORSE</p>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-2">
+                             <div class="chart-container">
+                                <canvas id="rewardChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="economy" class="content-section">
+                    <div class="text-center mb-8">
+                         <h3 class="text-2xl font-bold text-gray-800">The Dual-Token Economy</h3>
+                        <p class="mt-2 max-w-3xl mx-auto">The ecosystem operates on two core assets: the HORSE utility token and tradable Talent Shares (SHR). This separation allows for both a fluid reward mechanism and a stable investment framework.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-r-lg">
+                            <h4 class="text-xl font-bold text-gray-800">HORSE Token</h4>
+                            <p class="mt-2 text-gray-600">The primary utility and reward token of the ecosystem.</p>
+                            <ul class="mt-4 space-y-2 list-disc list-inside">
+                                <li><strong>Function:</strong> Earned for competitive success, used for governance (DAO votes), and provides liquidity on Decentralized Exchanges (DEX).</li>
+                                <li><strong>Supply:</strong> Unlimited, but its issuance is strictly tied to real, verifiable achievements, ensuring value is backed by intellectual work.</li>
+                                <li><strong>Principle:</strong> "Fair Launch" - no pre-mining or ICO, guaranteeing tokens are earned through merit.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 border-l-4 border-slate-500 p-6 rounded-r-lg">
+                            <h4 class="text-xl font-bold text-gray-800">Talent Shares (SHR)</h4>
+                             <p class="mt-2 text-gray-600">An NFT-based investment vehicle representing a stake in a participant's future success.</p>
+                            <ul class="mt-4 space-y-2 list-disc list-inside">
+                                <li><strong>Function:</strong> Grants holders the right to receive dividends (70% of earned HORSE rewards). Tradable on the internal Intellectual Exchange.</li>
+                                <li><strong>Supply:</strong> Fixed at 1,000 unique shares per participant, creating a clear investment structure.</li>
+                                <li><strong>Principle:</strong> Allows participants to gain upfront funding and enables investors to sponsor and profit from promising talent.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="flow" class="content-section">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800">The Value Flow: 20/10/70 Split</h3>
+                        <p class="mt-2 max-w-3xl mx-auto">Every HORSE reward is automatically distributed by a smart contract to align the interests of all stakeholders. Enter a total reward amount to see how it's allocated between the participant, their coach, and their investors (SHR holders).</p>
+                    </div>
+                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center bg-gray-50 p-6 rounded-lg">
+                        <div class="lg:col-span-1 space-y-6">
+                            <div>
+                                <label for="total-reward" class="text-lg font-medium">Total HORSE Reward Earned</label>
+                                <input id="total-reward" type="number" value="100" class="w-full mt-2 p-3 text-2xl font-bold border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500 text-center">
+                            </div>
+                            <div class="space-y-3">
+                                <div class="bg-white p-3 rounded-lg flex justify-between items-center shadow-sm">
+                                    <span class="font-medium">Participant (20%)</span>
+                                    <span id="participant-share" class="font-bold text-lg text-green-600">20.00 HORSE</span>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg flex justify-between items-center shadow-sm">
+                                    <span class="font-medium">Coach/Mentor (10%)</span>
+                                    <span id="coach-share" class="font-bold text-lg text-blue-600">10.00 HORSE</span>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg flex justify-between items-center shadow-sm">
+                                    <span class="font-medium">Investors (70%)</span>
+                                    <span id="investors-share" class="font-bold text-lg text-purple-600">70.00 HORSE</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-2">
+                             <div class="chart-container">
+                                <canvas id="distributionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="governance" class="content-section">
+                    <div class="text-center mb-8">
+                         <h3 class="text-2xl font-bold text-gray-800">Community Governance via DAO</h3>
+                        <p class="mt-2 max-w-3xl mx-auto">The HORSE project is designed for long-term decentralization. Key decisions are handed over to the community through a Decentralized Autonomous Organization (DAO), where HORSE token holders vote on the ecosystem's future.</p>
+                    </div>
+                    <div class="max-w-4xl mx-auto space-y-6">
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                             <h4 class="text-xl font-bold text-gray-800">Voting Power</h4>
+                             <p class="mt-2">Every HORSE token represents a vote, ensuring that the most invested community members have a proportional say in the project's direction. This aligns control with long-term commitment.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                             <h4 class="text-xl font-bold text-gray-800">Key Governable Parameters</h4>
+                             <p class="mt-2">The DAO's primary role is to ensure the economic stability and strategic growth of the ecosystem. Token holders can propose and vote on changes to:</p>
+                             <ul class="mt-4 space-y-2 list-disc list-inside">
+                                 <li><strong>Economic Stability:</strong> Adjustments to the reward formula's parameters (like coefficient K or the cubic exponent) to manage token issuance and value.</li>
+                                 <li><strong>Ecosystem Expansion:</strong> Prioritizing which new intellectual platforms (e.g., LeetCode, Kaggle, Math Olympiads) to integrate next.</li>
+                                 <li><strong>Treasury Allocation:</strong> Directing community funds towards development grants, marketing initiatives, or bug bounties.</li>
+                                 <li><strong>Protocol Upgrades:</strong> Approving updates to the smart contracts and core infrastructure.</li>
+                             </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 HORSE Project. Monetizing the world's intellectual capital.</p>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const target = tab.getAttribute('data-tab');
+                    contentSections.forEach(section => {
+                        section.style.display = 'none';
+                        if (section.id === target) {
+                            section.style.display = 'block';
+                        }
+                    });
+                });
+            });
+
+            const participantsSlider = document.getElementById('participants');
+            const participantsValue = document.getElementById('participants-value');
+            const rankSlider = document.getElementById('rank');
+            const rankValue = document.getElementById('rank-value');
+            const coefficientSelect = document.getElementById('coefficient');
+            const rewardResult = document.getElementById('reward-result');
+
+            let rewardChart;
+            const rewardCtx = document.getElementById('rewardChart').getContext('2d');
+
+            function calculateReward(P, S, K, M = 1) {
+                if (P === 0) return 0;
+                const base = (P - S + 1) / P;
+                const reward = (Math.pow(base, 3) * K * 10) / M;
+                return reward;
+            }
+
+            function updateRewardUI() {
+                const P = parseInt(participantsSlider.value);
+                const S = parseInt(rankSlider.value);
+                const K = parseFloat(coefficientSelect.value);
+
+                participantsValue.textContent = P;
+                rankSlider.max = P;
+                if (S > P) {
+                    rankSlider.value = P;
+                    rankValue.textContent = P;
+                } else {
+                   rankValue.textContent = S;
+                }
+
+                const personalReward = calculateReward(P, S, K);
+                rewardResult.textContent = `${personalReward.toFixed(2)} HORSE`;
+                
+                updateRewardChart(P, K);
+            }
+            
+            function updateRewardChart(P, K) {
+                const ranksToShow = [
+                    1, 
+                    Math.round(P * 0.01) || 2, 
+                    Math.round(P * 0.1), 
+                    Math.round(P * 0.5), 
+                    P
+                ];
+                const uniqueRanks = [...new Set(ranksToShow)].sort((a,b) => a-b);
+                
+                const labels = uniqueRanks.map(r => `Rank ${r}`);
+                const data = uniqueRanks.map(r => calculateReward(P, r, K));
+
+                if (rewardChart) {
+                    rewardChart.data.labels = labels;
+                    rewardChart.data.datasets[0].data = data;
+                    rewardChart.update();
+                } else {
+                    rewardChart = new Chart(rewardCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'HORSE Reward',
+                                data: data,
+                                backgroundColor: '#FBBF24',
+                                borderColor: '#D97706',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'HORSE Tokens'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Reward Distribution by Rank (Cubic Model)',
+                                    font: {
+                                        size: 16
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            
+            participantsSlider.addEventListener('input', updateRewardUI);
+            rankSlider.addEventListener('input', updateRewardUI);
+            coefficientSelect.addEventListener('change', updateRewardUI);
+
+            const totalRewardInput = document.getElementById('total-reward');
+            const participantShareEl = document.getElementById('participant-share');
+            const coachShareEl = document.getElementById('coach-share');
+            const investorsShareEl = document.getElementById('investors-share');
+            let distributionChart;
+            const distCtx = document.getElementById('distributionChart').getContext('2d');
+
+            function updateDistributionUI() {
+                const total = parseFloat(totalRewardInput.value) || 0;
+                const participantShare = total * 0.20;
+                const coachShare = total * 0.10;
+                const investorsShare = total * 0.70;
+
+                participantShareEl.textContent = `${participantShare.toFixed(2)} HORSE`;
+                coachShareEl.textContent = `${coachShare.toFixed(2)} HORSE`;
+                investorsShareEl.textContent = `${investorsShare.toFixed(2)} HORSE`;
+
+                updateDistributionChart([participantShare, coachShare, investorsShare]);
+            }
+            
+            function updateDistributionChart(data) {
+                 if (distributionChart) {
+                    distributionChart.data.datasets[0].data = data;
+                    distributionChart.update();
+                } else {
+                    distributionChart = new Chart(distCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Participant (20%)', 'Coach (10%)', 'Investors (70%)'],
+                            datasets: [{
+                                data: data,
+                                backgroundColor: ['#10B981', '#3B82F6', '#8B5CF6'],
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'HORSE Reward Allocation',
+                                    font: {
+                                        size: 16
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            totalRewardInput.addEventListener('input', updateDistributionUI);
+
+            updateRewardUI();
+            updateDistributionUI();
+        });
+    </script>
+
+</body>
+</html>
