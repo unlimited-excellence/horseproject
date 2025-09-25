@@ -1,4 +1,4 @@
-# The HORSE Project: A Simple Concept for Tokenizing Knowledge
+# The HORSE Project: A Concept for Tokenizing Knowledge
 
 ---
 
