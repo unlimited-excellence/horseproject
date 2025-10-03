@@ -39,7 +39,7 @@ version = VERSION
 repositories {
     mavenCentral()
     maven("https://repo.repsy.io/mvn/likespro/maven")
-    mavenLocal()
+//    mavenLocal()
 }
 
 kotlin {
@@ -47,7 +47,7 @@ kotlin {
 }
 
 dependencies {
-    api("io.github.likespro:axusid-core:0.0.1")
+    api("io.github.likespro:axusid-core:0.0.1-1")
     implementation("io.github.likespro:commons-core:3.2.0-1")
     implementation("io.github.likespro:lpfcp-core:1.2.0-1")
     implementation("io.ktor:ktor-serialization-gson:3.1.3")

@@ -15,7 +15,7 @@ repositories {
 dependencies {
     api(project(":core"))
 
-    implementation("io.github.likespro:axusid-client:0.0.1")
+    implementation("io.github.likespro:axusid-client:0.0.1-1")
     implementation("io.github.likespro:atomarix-core:1.0.0-1-disabled")
     implementation("io.github.likespro:commons-core:3.2.0-1")
     implementation("io.github.likespro:commons-reflection:3.2.0-1")

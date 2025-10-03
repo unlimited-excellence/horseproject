@@ -15,13 +15,13 @@ application {
 repositories {
     mavenCentral()
     maven("https://repo.repsy.io/mvn/likespro/maven")
-    mavenLocal() // TODO Remove this when commons is published
+//    mavenLocal() // TODO Remove this when commons is published
 }
 
 dependencies {
     implementation(project(":shared"))
 
-    implementation("io.github.likespro:axusid-client:0.0.1")
+    implementation("io.github.likespro:axusid-client:0.0.1-1")
 
     implementation("io.github.likespro:atomarix-core:1.0.0-1-disabled")
     implementation("io.github.likespro:atomarix-exposed:1.0.0-1-disabled")
