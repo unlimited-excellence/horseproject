@@ -1,0 +1,65 @@
+name: Deploy mini-service to Cloud Run (OIDC, Docker build)
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: horseproject-prod
+  REGION: europe-central2
+  REPO_NAME: horse-repo
+  SERVICE_NAME: mini-service
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: mini-service
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - id: auth
+        name: Authenticate to Google Cloud (OIDC)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: "projects/515479195720/locations/global/workloadIdentityPools/gh-pool/providers/gh-provider2"
+          service_account: "gh-actions-deployer@horseproject-prod.iam.gserviceaccount.com"
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Configure Docker auth for Artifact Registry
+        run: gcloud auth configure-docker europe-central2-docker.pkg.dev --quiet
+
+      - name: Build Docker image
+        run: |
+          IMAGE="europe-central2-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${SERVICE_NAME}:${GITHUB_SHA}"
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+          docker build -t "$IMAGE" .
+
+      - name: Push Docker image
+        run: docker push "$IMAGE"
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy "${SERVICE_NAME}" \
+            --image="${IMAGE}" \
+            --region="${REGION}" \
+            --allow-unauthenticated \
+            --port=8080
+
+      - name: Print service URL
+        run: |
+          URL=$(gcloud run services describe "${SERVICE_NAME}" --region="${REGION}" --format='value(status.url)')
+          echo "Service URL: $URL"
