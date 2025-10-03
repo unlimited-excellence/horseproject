@@ -9,7 +9,6 @@ version = "0.0.1"
 repositories {
     mavenCentral()
     maven("https://repo.repsy.io/mvn/likespro/maven")
-    mavenLocal() // TODO Remove this when commons is published
 }
 
 dependencies {
@@ -21,16 +20,18 @@ dependencies {
     implementation("io.github.likespro:commons-reflection:3.2.0-1")
     implementation("io.github.likespro:lpfcp-core:1.2.0-1")
     implementation("io.ktor:ktor-serialization-gson:3.1.3")
-    testImplementation(kotlin("test"))
 
     implementation("org.jetbrains.exposed:exposed-core:0.61.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
     implementation("org.jetbrains.exposed:exposed-java-time:0.61.0")
+
+    testImplementation(kotlin("test"))
 }
 
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(17)
 }

@@ -3,6 +3,7 @@ val VERSION = "0.0.1"
 val NAME = "AXUS ID Client"
 val DESCRIPTION = "Client library for AXUS ID identity system."
 val URL = "https://axusid.unlimitedexcellence.org"
+
 val LICENSES: MavenPomLicenseSpec.(project: Project) -> Unit = { project ->
     license {
         name.set("Mozilla Public License 2.0")
@@ -15,13 +16,9 @@ val DEVELOPERS: MavenPomDeveloperSpec.() -> Unit = {
         email.set("likespro.eth@gmail.com")
     }
 }
-val SCM: MavenPomScm.() -> Unit = {
-//    connection.set("scm:git:git://github.com/likespro/commons.git")
-//    developerConnection.set("scm:git:ssh://github.com:likespro/commons.git")
-//    url.set("https://github.com/likespro/commons")
-}
-val PUBLISHED_ARTIFACTS_PREFIX = "axusid-" // Until normal group ID - eth.likespro.commons
+val SCM: MavenPomScm.() -> Unit = { }
 
+val PUBLISHED_ARTIFACTS_PREFIX = "axusid-" // Until normal group ID - eth.likespro.commons
 
 plugins {
     kotlin("jvm") version "2.1.20"
@@ -39,7 +36,6 @@ version = VERSION
 repositories {
     mavenCentral()
     maven("https://repo.repsy.io/mvn/likespro/maven")
-//    mavenLocal()
 }
 
 kotlin {
@@ -62,23 +58,17 @@ java {
 jacoco {
     toolVersion = "0.8.10"
 }
+
 tasks.test {
     useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport)
-}
-
-tasks.create("documentate") {
-    group = "documentation"
-    dependsOn(tasks.dokkaHtml)
 }
 
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
-
             artifactId = PUBLISHED_ARTIFACTS_PREFIX + project.name
-
             pom {
                 name.set(NAME)
                 description.set(DESCRIPTION)
@@ -89,25 +79,14 @@ publishing {
             }
         }
     }
-
-    repositories {
-        if(System.getenv("GITHUB_REPO") != null) {
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/" + System.getenv("GITHUB_REPO"))
-
-                credentials {
-                    username = System.getenv("GITHUB_USERNAME")
-                    password = System.getenv("GITHUB_TOKEN")
-                }
-            }
-        }
-    }
 }
 
-if(System.getenv("PGP_PRIVATE_KEY") != null) signing {
+if (System.getenv("PGP_PRIVATE_KEY") != null) signing {
     sign(publishing.publications)
-    useInMemoryPgpKeys(System.getenv("PGP_PRIVATE_KEY").replace("\\n", "\n")?.trimIndent(), System.getenv("PGP_PRIVATE_KEY_PASSWORD") ?: "")
+    useInMemoryPgpKeys(
+        System.getenv("PGP_PRIVATE_KEY").replace("\\n", "\n")?.trimIndent(),
+        System.getenv("PGP_PRIVATE_KEY_PASSWORD") ?: ""
+    )
 }
 
 nmcp {
@@ -115,16 +94,5 @@ nmcp {
         username = System.getenv("SONATYPE_USERNAME")
         password = System.getenv("SONATYPE_PASSWORD")
         publishingType = "USER_MANAGED"
-    }
-}
-
-tasks.register("printProjectName") {
-    doLast {
-        println(rootProject.name)
-    }
-}
-tasks.register("printProjectVersion") {
-    doLast {
-        println(version)
     }
 }
