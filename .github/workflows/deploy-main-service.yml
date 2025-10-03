@@ -1,4 +1,4 @@
-name: Deploy main-service to Cloud Run
+name: Deploy main-service to Cloud Run (Docker build)
 
 on:
   push:
@@ -9,42 +9,66 @@ on:
       - "main-service/**"
       - "Dockerfile"
       - ".github/workflows/deploy-main-service.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: horseproject-prod
+  REGION: europe-central2
+  REPO_NAME: horse-repo
+  SERVICE_NAME: main-service
+  IMAGE: europe-central2-docker.pkg.dev/horseproject-prod/horse-repo/main-service:${{ github.sha }}
+  RUNTIME_SA: 515479195720-compute@developer.gserviceaccount.com
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
-        id: auth
+      - id: auth
+        name: Authenticate to Google Cloud (OIDC)
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
-      - name: Configure gcloud
+      - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
 
-      - name: Build & push Docker image
+      - name: Configure Docker auth for Artifact Registry
+        run: gcloud auth configure-docker europe-central2-docker.pkg.dev --quiet
+
+      - name: Build image
         run: |
-          gcloud builds submit \
-            --tag europe-central2-docker.pkg.dev/horseproject-prod/horse-repo/main-service:latest
+          docker build -t "${IMAGE}" .
+
+      - name: Push image
+        run: |
+          docker push "${IMAGE}"
 
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy main-service \
-            --image=europe-central2-docker.pkg.dev/horseproject-prod/horse-repo/main-service:latest \
-            --region=europe-central2 \
+          gcloud run deploy "${SERVICE_NAME}" \
+            --image="${IMAGE}" \
+            --region="${REGION}" \
             --platform=managed \
+            --service-account="${RUNTIME_SA}" \
             --vpc-connector=horse-vpc-connector \
             --set-env-vars=POSTGRESQL_URI="jdbc:postgresql://10.3.0.3:5432/horse" \
             --set-env-vars=POSTGRESQL_USERNAME="horseuser" \
             --set-secrets=POSTGRESQL_PASSWORD=horse-db-password:latest \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --port=8080
+
+      - name: Print service URL
+        run: |
+          URL=$(gcloud run services describe "${SERVICE_NAME}" --region="${REGION}" --format='value(status.url)')
+          echo "Service URL: $URL"
