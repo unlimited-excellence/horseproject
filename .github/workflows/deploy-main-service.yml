@@ -1,0 +1,50 @@
+name: Deploy main-service to Cloud Run
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "core/**"
+      - "shared/**"
+      - "main-service/**"
+      - "Dockerfile"
+      - ".github/workflows/deploy-main-service.yml"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Configure gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build & push Docker image
+        run: |
+          gcloud builds submit \
+            --tag europe-central2-docker.pkg.dev/horseproject-prod/horse-repo/main-service:latest
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy main-service \
+            --image=europe-central2-docker.pkg.dev/horseproject-prod/horse-repo/main-service:latest \
+            --region=europe-central2 \
+            --platform=managed \
+            --vpc-connector=horse-vpc-connector \
+            --set-env-vars=POSTGRESQL_URI="jdbc:postgresql://10.3.0.3:5432/horse" \
+            --set-env-vars=POSTGRESQL_USERNAME="horseuser" \
+            --set-secrets=POSTGRESQL_PASSWORD=horse-db-password:latest \
+            --allow-unauthenticated
