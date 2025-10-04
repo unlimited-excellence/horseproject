@@ -62,10 +62,8 @@ jobs:
             --platform=managed \
             --service-account="${RUNTIME_SA}" \
             --vpc-connector=horse-vpc-connector-fix \
-            --set-env-vars=DISABLE_DB=true \
-            --set-env-vars=POSTGRESQL_URI="jdbc:postgresql://10.3.0.3:5432/horse" \
-            --set-env-vars=POSTGRESQL_USERNAME="horseuser" \
-            --set-secrets=POSTGRESQL_PASSWORD=horse-db-password:latest \
+            --set-env-vars=DISABLE_DB=false \
+            --set-secrets=POSTGRESQL_PASSWORD=horse-db-password:latest,POSTGRESQL_USERNAME=horse-db-username:latest,POSTGRESQL_URI=horse-db-uri:latest \
             --allow-unauthenticated
 
       - name: Print service URL
