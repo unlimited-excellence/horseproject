@@ -20,9 +20,9 @@ env:
   REGION: europe-central2
   REPO_NAME: horse-repo
   SERVICE_NAME: main-service
-  # Immutable image (by commit)
+  # Immutable image (tagged by commit SHA)
   IMAGE_SHA: europe-central2-docker.pkg.dev/horseproject-prod/horse-repo/main-service:${{ github.sha }}
-  # Mutable convenience tag
+  # Mutable tag for latest successful build
   IMAGE_LATEST: europe-central2-docker.pkg.dev/horseproject-prod/horse-repo/main-service:latest
   RUNTIME_SA: 515479195720-compute@developer.gserviceaccount.com
 
@@ -49,7 +49,7 @@ jobs:
       - name: Configure Docker auth for Artifact Registry
         run: gcloud auth configure-docker europe-central2-docker.pkg.dev --quiet
 
-      - name: Build image (SHA)
+      - name: Build image (by SHA)
         run: |
           docker build -t "${IMAGE_SHA}" .
 
@@ -62,7 +62,7 @@ jobs:
           docker push "${IMAGE_SHA}"
           docker push "${IMAGE_LATEST}"
 
-      - name: Deploy to Cloud Run (deploy by SHA for immutability)
+      - name: Deploy to Cloud Run (immutable image)
         run: |
           gcloud run deploy "${SERVICE_NAME}" \
             --image="${IMAGE_SHA}" \
@@ -77,4 +77,4 @@ jobs:
       - name: Print service URL
         run: |
           URL=$(gcloud run services describe "${SERVICE_NAME}" --region="${REGION}" --format='value(status.url)')
-          echo "Service URL: $URL"
+          echo "✅ Service successfully deployed at: $URL"
