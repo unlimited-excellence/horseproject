@@ -21,15 +21,17 @@ WORKDIR /app
 # Copy built fat JAR
 COPY --from=builder /home/gradle/project/main-service/build/libs/main-service-all.jar ./main-service.jar
 
-# Generic env (do NOT hardcode secrets here)
+# Generic env (do NOT bake secrets here)
 ENV ENVIRONMENT=production
-ENV POSTGRESQL_URI="jdbc:postgresql://10.3.0.3:5432/horse"
-ENV POSTGRESQL_USERNAME="horseuser"
+# Leave DB env empty here; they come from Cloud Run deploy flags/secrets
+ENV POSTGRESQL_URI=""
+ENV POSTGRESQL_USERNAME=""
 ENV POSTGRESQL_PASSWORD=""
 
-# Expose ports
+# Expose ports (optional, for local run / docs)
 EXPOSE 8080
 EXPOSE 50008
 
-# Run the service
-ENTRYPOINT ["java", "-jar", "main-service.jar"]
+# Run the service and honor Cloud Run's PORT env
+# Ktor will listen on -Dktor.deployment.port; Cloud Run injects PORT.
+ENTRYPOINT ["sh","-c","java -Dktor.deployment.port=${PORT:-8080} -Dktor.deployment.host=0.0.0.0 -jar main-service.jar"]
