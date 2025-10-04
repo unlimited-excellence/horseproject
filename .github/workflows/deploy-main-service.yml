@@ -1,5 +1,4 @@
-# file: .github/workflows/deploy-main-service.yml
-name: Deploy main-service to Cloud Run (Docker build)
+name: Deploy main-service to Cloud Run
 
 on:
   push:
