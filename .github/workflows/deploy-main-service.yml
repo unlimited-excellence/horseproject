@@ -1,3 +1,4 @@
+# file: .github/workflows/deploy-main-service.yml
 name: Deploy main-service to Cloud Run (Docker build)
 
 on:
@@ -20,7 +21,10 @@ env:
   REGION: europe-central2
   REPO_NAME: horse-repo
   SERVICE_NAME: main-service
-  IMAGE: europe-central2-docker.pkg.dev/horseproject-prod/horse-repo/main-service:${{ github.sha }}
+  # Immutable image (by commit)
+  IMAGE_SHA: europe-central2-docker.pkg.dev/horseproject-prod/horse-repo/main-service:${{ github.sha }}
+  # Mutable convenience tag
+  IMAGE_LATEST: europe-central2-docker.pkg.dev/horseproject-prod/horse-repo/main-service:latest
   RUNTIME_SA: 515479195720-compute@developer.gserviceaccount.com
 
 jobs:
@@ -46,18 +50,23 @@ jobs:
       - name: Configure Docker auth for Artifact Registry
         run: gcloud auth configure-docker europe-central2-docker.pkg.dev --quiet
 
-      - name: Build image
+      - name: Build image (SHA)
         run: |
-          docker build -t "${IMAGE}" .
+          docker build -t "${IMAGE_SHA}" .
 
-      - name: Push image
+      - name: Tag image as latest
         run: |
-          docker push "${IMAGE}"
+          docker tag "${IMAGE_SHA}" "${IMAGE_LATEST}"
 
-      - name: Deploy to Cloud Run
+      - name: Push images (SHA and latest)
+        run: |
+          docker push "${IMAGE_SHA}"
+          docker push "${IMAGE_LATEST}"
+
+      - name: Deploy to Cloud Run (deploy by SHA for immutability)
         run: |
           gcloud run deploy "${SERVICE_NAME}" \
-            --image="${IMAGE}" \
+            --image="${IMAGE_SHA}" \
             --region="${REGION}" \
             --platform=managed \
             --service-account="${RUNTIME_SA}" \
